@@ -3,37 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A live digital clock for cities around the world." />
-    <title>WorldTime — Digital Clock</title>
+    <meta name="description" content="A random joke generator powered by JokeAPI." />
+    <title>LaughLab — Random Joke Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
-        <a class="brand" href="./" aria-label="WorldTime home"><span class="brand-mark">◷</span> WorldTime</a>
-        <p class="live-indicator"><span aria-hidden="true"></span> Live clock</p>
+        <a class="brand" href="./" aria-label="LaughLab home"><span class="brand-mark" aria-hidden="true">✦</span> LaughLab</a>
+        <span class="api-label">Powered by JokeAPI</span>
       </header>
 
       <main>
-        <section class="intro" aria-labelledby="page-title">
-          <p class="eyebrow">TIME, ANYWHERE</p>
-          <h1 id="page-title">Your world,<br /><em>in sync.</em></h1>
-          <p class="intro-copy">Keep track of the moments that matter, wherever they happen.</p>
+        <section class="hero" aria-labelledby="page-title">
+          <p class="eyebrow">A LITTLE JOY, ON DEMAND</p>
+          <h1 id="page-title">Need a reason<br /><em>to smile?</em></h1>
+          <p class="hero-copy">Pull up a fresh joke whenever you need a quick break from the ordinary.</p>
         </section>
 
-        <section class="clock-section" aria-labelledby="clocks-title">
-          <div class="section-heading">
-            <h2 id="clocks-title">World clocks</h2>
-            <button id="add-clock" class="add-button" type="button">+ Add timezone</button>
+        <section class="joke-panel" aria-labelledby="joke-title">
+          <div class="panel-topline"><span>RANDOM JOKE</span><span id="joke-number">#001</span></div>
+          <div id="joke-content" class="joke-content" aria-live="polite">
+            <p id="joke-text">Ready when you are.</p>
           </div>
-          <p id="clock-status" class="status" role="status" aria-live="polite"></p>
-          <div id="clock-list" class="clock-list"></div>
+          <p id="joke-category" class="category">Any category</p>
+          <div class="actions">
+            <button id="new-joke" class="primary-button" type="button"><span aria-hidden="true">↻</span> Tell me another</button>
+            <button id="copy-joke" class="secondary-button" type="button" disabled><span aria-hidden="true">▣</span> Copy joke</button>
+          </div>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
         </section>
-      </main>
 
-      <footer>All times update automatically using your device clock.</footer>
+        <p class="tip"><span aria-hidden="true">☀</span> Safe-for-work jokes only · No sign-up required</p>
+      </main>
+      <footer>Jokes provided by <a href="https://jokeapi.dev/" target="_blank" rel="noreferrer">JokeAPI</a></footer>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

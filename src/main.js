@@ -1,103 +1,59 @@
 import './style.css';
 
-const STORAGE_KEY = 'worldtime-zones';
-const DEFAULT_ZONES = [
-  { id: 'local', city: 'Local time', zone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-  { id: 'new-york', city: 'New York', zone: 'America/New_York' },
-  { id: 'london', city: 'London', zone: 'Europe/London' },
-  { id: 'tokyo', city: 'Tokyo', zone: 'Asia/Tokyo' },
-];
-const AVAILABLE_ZONES = [
-  ['los-angeles', 'Los Angeles', 'America/Los_Angeles'],
-  ['sao-paulo', 'São Paulo', 'America/Sao_Paulo'],
-  ['mexico-city', 'Mexico City', 'America/Mexico_City'],
-  ['paris', 'Paris', 'Europe/Paris'],
-  ['dubai', 'Dubai', 'Asia/Dubai'],
-  ['singapore', 'Singapore', 'Asia/Singapore'],
-  ['sydney', 'Sydney', 'Australia/Sydney'],
-];
+const API_URL = 'https://v2.jokeapi.dev/joke/Any?type=single&safe-mode';
+const jokeText = document.getElementById('joke-text');
+const jokeCategory = document.getElementById('joke-category');
+const jokeNumber = document.getElementById('joke-number');
+const status = document.getElementById('status');
+const newJokeButton = document.getElementById('new-joke');
+const copyButton = document.getElementById('copy-joke');
+let currentJoke = '';
+let jokeCount = 0;
 
-const clockList = document.getElementById('clock-list');
-const status = document.getElementById('clock-status');
-let zones = loadZones();
+function setLoading(isLoading) {
+  newJokeButton.disabled = isLoading;
+  newJokeButton.classList.toggle('is-loading', isLoading);
+  newJokeButton.innerHTML = isLoading
+    ? '<span class="spinner" aria-hidden="true"></span> Finding a joke...'
+    : '<span aria-hidden="true">↻</span> Tell me another';
+}
 
-function loadZones() {
+async function fetchJoke() {
+  setLoading(true);
+  status.textContent = '';
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Array.isArray(saved) && saved.length ? saved : DEFAULT_ZONES;
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('The joke service is unavailable right now.');
+    const data = await response.json();
+    if (data.error || !data.joke) throw new Error('We could not find a joke this time.');
+
+    currentJoke = data.joke;
+    jokeCount += 1;
+    jokeText.textContent = data.joke;
+    jokeCategory.textContent = data.category || 'Any category';
+    jokeNumber.textContent = `#${String(jokeCount).padStart(3, '0')}`;
+    copyButton.disabled = false;
+  } catch (error) {
+    status.textContent = error.message || 'Something went wrong. Please try again.';
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function copyJoke() {
+  if (!currentJoke) return;
+  try {
+    await navigator.clipboard.writeText(currentJoke);
+    status.textContent = 'Joke copied to your clipboard.';
+    copyButton.innerHTML = '<span aria-hidden="true">✓</span> Copied';
+    window.setTimeout(() => {
+      copyButton.innerHTML = '<span aria-hidden="true">▣</span> Copy joke';
+    }, 1800);
   } catch {
-    return DEFAULT_ZONES;
+    status.textContent = 'Could not copy the joke. Please select it manually.';
   }
 }
 
-function saveZones() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(zones));
-}
-
-function formatTime(now, zone) {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: zone,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).format(now);
-}
-
-function formatDate(now, zone) {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: zone,
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(now);
-}
-
-function formatZoneName(zone) {
-  return new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'long' })
-    .formatToParts(new Date()).find((part) => part.type === 'timeZoneName')?.value || zone;
-}
-
-function render(now = new Date()) {
-  clockList.innerHTML = zones.map((item, index) => `
-    <article class="clock-card ${index === 0 ? 'clock-card--featured' : ''}" data-id="${item.id}">
-      <div class="clock-card__top">
-        <div>
-          <p class="city">${item.city}${index === 0 ? ' <span class="you">YOU ARE HERE</span>' : ''}</p>
-          <p class="zone">${formatZoneName(item.zone)}</p>
-        </div>
-        ${index > 0 ? `<button class="remove-button" type="button" data-remove="${item.id}" aria-label="Remove ${item.city}">×</button>` : ''}
-      </div>
-      <time class="time" datetime="${now.toISOString()}">${formatTime(now, item.zone)}</time>
-      <p class="date">${formatDate(now, item.zone)}</p>
-    </article>
-  `).join('');
-}
-
-function addTimezone() {
-  const existing = new Set(zones.map(({ id }) => id));
-  const next = AVAILABLE_ZONES.find(([id]) => !existing.has(id));
-  if (!next) {
-    status.textContent = 'All available time zones are already displayed.';
-    return;
-  }
-  const [id, city, zone] = next;
-  zones.push({ id, city, zone });
-  saveZones();
-  status.textContent = `${city} added.`;
-  render();
-}
-
-document.getElementById('add-clock').addEventListener('click', addTimezone);
-clockList.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-remove]');
-  if (!button) return;
-  zones = zones.filter(({ id }) => id !== button.dataset.remove);
-  saveZones();
-  status.textContent = 'Time zone removed.';
-  render();
-});
-
-render();
-setInterval(() => render(), 1000);
+newJokeButton.addEventListener('click', fetchJoke);
+copyButton.addEventListener('click', copyJoke);
+fetchJoke();
