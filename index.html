@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A simple weather dashboard powered by Open-Meteo." />
+    <title>SkyCast Weather Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="SkyCast home"><span class="brand-mark">☼</span> SkyCast</a>
+        <p class="api-note">Live weather · Open-Meteo</p>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">YOUR WEATHER, AT A GLANCE</p>
+            <h1 id="page-title">Plan your day<br /><em>with confidence.</em></h1>
+          </div>
+          <form id="search-form" class="search-form" role="search">
+            <label class="sr-only" for="city-input">Search for a city</label>
+            <span aria-hidden="true">⌕</span>
+            <input id="city-input" name="city" type="search" placeholder="Search city..." autocomplete="off" required />
+            <button type="submit">Search</button>
+          </form>
+          <button id="location-button" class="location-button" type="button">◎ Use my location</button>
+        </section>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <section id="weather-content" hidden>
+          <div class="location-heading">
+            <div>
+              <p class="eyebrow">CURRENT CONDITIONS</p>
+              <h2 id="location-name">—</h2>
+              <p id="updated-at" class="muted">—</p>
+            </div>
+            <p id="local-time" class="local-time">—</p>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="current-card card">
+              <div class="weather-icon" id="current-icon" aria-hidden="true">☀</div>
+              <div class="temperature"><span id="current-temp">—</span><sup>°C</sup></div>
+              <p id="current-summary" class="condition">—</p>
+              <div class="high-low"><span>H <strong id="today-high">—</strong>°</span><span>L <strong id="today-low">—</strong>°</span></div>
+            </article>
+
+            <article class="details-card card">
+              <h3>Today’s details</h3>
+              <div class="details-grid">
+                <div><span class="detail-icon">💧</span><small>Humidity</small><strong id="humidity">—</strong></div>
+                <div><span class="detail-icon">💨</span><small>Wind</small><strong id="wind">—</strong></div>
+                <div><span class="detail-icon">🌡</span><small>Feels like</small><strong id="feels-like">—</strong></div>
+                <div><span class="detail-icon">☔</span><small>Rain chance</small><strong id="rain-chance">—</strong></div>
+              </div>
+            </article>
+          </div>
+
+          <section class="forecast-section" aria-labelledby="forecast-title">
+            <div class="section-heading"><h3 id="forecast-title">7-day forecast</h3><span class="muted">Daily outlook</span></div>
+            <div id="forecast" class="forecast-list"></div>
+          </section>
+        </section>
+      </main>
+      <footer>Data provided by <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a> · No API key required</footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
